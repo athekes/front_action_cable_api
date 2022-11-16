@@ -1,0 +1,150 @@
+<h1>Hello World</h1>
+
+
+<button id="create_user">create_user</button>
+<button id="create_room">create_room</button>
+<button id="connect_to_room">connect_to_room</button>
+<button id="init_game">init_game</button>
+<button id="show_current_scoreboard">show_current_scoreboard</button>
+<button id="register_answer">register_answer</button>
+
+
+<script>
+  function sendMessage(websocket, message) {
+    websocket.send(JSON.stringify(message))
+  }
+
+  function getCookie(cname) {
+    let allCookies = document.cookie.split(';')
+
+    for(let i = 0; i < allCookies.length; i++) {
+      let cookie = allCookies[i].split('=')
+      let cookieName = cookie[0]
+      let cookieValue = cookie[1]
+
+      if (cookieName === cname){
+        return cookieValue
+      }
+    }
+  }
+
+  var webSocket = null
+
+  var room_id = null
+  var default_questionaire = "4bf9d511-c04f-41dd-985e-fc604144e5fb"
+  var default_alternative = "23933946-ea06-4d37-bb6a-d121ae30ed2d"
+
+  console.log('Cookie:', document.cookie)
+  console.log('UserUUIDFromCookie:', getCookie('user_uuid'))
+
+  const create_user = document.querySelector('#create_user')
+  create_user.addEventListener("click", () => {
+    const requestOptions = {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        "user": { 
+          "name": `Abllube${Math.floor(Math.random() * 101)}`
+        }
+      })
+    }
+
+    fetch('http://localhost:3000/users', requestOptions)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Cookie:', document.cookie)
+        console.log('UserUUIDFromCookie:', getCookie('user_uuid'))
+      });
+  })
+
+  const create_room = document.querySelector('#create_room')
+  create_room.addEventListener("click", () => {
+    const requestOptions = {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        "room": { 
+          "code": "jacaré",
+          "owner_id": getCookie('user_uuid'),
+          "questionaire_id": default_questionaire
+        }
+      })
+    }
+
+    fetch('http://localhost:3000/rooms', requestOptions)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        room_id = data.id
+      });
+  })
+
+  const connect_to_room = document.querySelector('#connect_to_room')
+  connect_to_room.addEventListener("click", () => {
+    webSocket = new WebSocket("ws://localhost:3000/cable")
+  
+    webSocket.onopen = (event) => {
+      const subMessage = {
+        command: "subscribe",
+        identifier: JSON.stringify({ 
+          channel: "RoomsChannel", 
+          room_id: room_id
+        })
+      }
+
+      sendMessage(webSocket, subMessage)
+    }
+  })
+
+  const init_game_button = document.querySelector('#init_game')
+  init_game_button.addEventListener("click", () => {
+    const testMessage = {
+      command: "message",
+      identifier: JSON.stringify({
+        channel: "RoomsChannel",
+        room_id: room_id
+      }),
+      data: JSON.stringify({
+        action: 'init_game'
+      })
+    }
+
+    sendMessage(webSocket, testMessage)
+  })
+
+  const show_current_scoreboard = document.querySelector('#show_current_scoreboard')
+  show_current_scoreboard.addEventListener("click", () => {
+    const testMessage = {
+      command: "message",
+      identifier: JSON.stringify({
+        channel: "RoomsChannel",
+        room_id: room_id
+      }),
+      data: JSON.stringify({
+        action: 'show_current_scoreboard'
+      })
+    }
+
+    sendMessage(webSocket, testMessage)
+  })
+
+  const register_answer = document.querySelector('#register_answer')
+  register_answer.addEventListener("click", () => {
+    const testMessage = {
+      command: "message",
+      identifier: JSON.stringify({
+        channel: "RoomsChannel",
+        room_id: room_id
+      }),
+      data: JSON.stringify({
+        action: 'register_answer',
+        alternative_id: default_alternative
+      })
+    }
+
+    sendMessage(webSocket, testMessage)
+  })
+
+</script>
