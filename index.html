@@ -29,10 +29,7 @@
   }
 
   var webSocket = null
-
   var room_id = null
-  var default_questionaire = "4bf9d511-c04f-41dd-985e-fc604144e5fb"
-  var default_alternative = "23933946-ea06-4d37-bb6a-d121ae30ed2d"
 
   console.log('Cookie:', document.cookie)
   console.log('UserUUIDFromCookie:', getCookie('user_uuid'))
@@ -63,14 +60,7 @@
     const requestOptions = {
       method: 'POST',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        "room": { 
-          "code": "jacaré",
-          "owner_id": getCookie('user_uuid'),
-          "questionaire_id": default_questionaire
-        }
-      })
+      headers: { 'Content-Type': 'application/json' }
     }
 
     fetch('http://localhost:3000/rooms', requestOptions)
@@ -140,7 +130,7 @@
       }),
       data: JSON.stringify({
         action: 'register_answer',
-        alternative_id: default_alternative
+        alternative_position: 'a'
       })
     }
 
