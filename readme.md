@@ -1,13 +1,13 @@
 ## Rotas API REST
-  OBS: Para todas as rotas, menos o create de user, e necessário ter setado anteriormente cookie de sessão atravez da rota do create user
+  OBS: Para todas as rotas, menos o create de user, e necessário ter setado anteriormente cookie de sessão através da rota do create user
   
   #### namespace administrative
-    rest_resouces for questionaires
-    rest_resouces for questions
-    rest_resouces for alternative
+    rest_resources for questionaires
+    rest_resources for questions
+    rest_resources for alternative
   ##### namespace /
-    rest_resouces for rooms
-    rest_resouces for users( criar um user e seta o "cookie de sessão")
+    rest_resources for rooms
+    rest_resources for users( criar um user e seta o "cookie de sessão")
 
 ### Rotas WebSocket
   Rota base de conexão: "ws://localhost:3000/cable"
@@ -55,7 +55,7 @@
     },
     data: {
       action: 'register_answer',
-      alternative_id: '252c3b89-27ab-4fd3-a11c-3d2f5f83f526'
+      alternative_position: 'a'
     }
 
   #### unsubscribed
